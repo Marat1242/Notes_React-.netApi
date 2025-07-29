@@ -13,7 +13,7 @@ var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
 
-await using var dbContext = scope.ServiceProvider.GetRequiredService<NotesDbContext>();
+ using var dbContext = scope.ServiceProvider.GetRequiredService<NotesDbContext>();
 
 await dbContext.Database.EnsureCreatedAsync();
 

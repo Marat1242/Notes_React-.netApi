@@ -10,26 +10,32 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: marat321
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   notespetproject:
     container_name: notespetproject
     build:
       context: .
-      dockerfile: NotesPetProject/Dockerfile  # ”казываем путь к Dockerfile
+      dockerfile: NotesPetProject/NotesPetProject/Dockerfile
     ports:
-      - "8080:8080"  # —опоставл€ем с портами из Dockerfile
+      - "8080:8080"
       - "8081:8081"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__NotesDb: "Host=postgres;Database=NotesDb;Username=postgres;Password=marat321"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     volumes:
-      - ./NotesPetProject:/app  # ƒл€ гор€чей перезагрузки в разработке
-      - ~/.aspnet/https:/https:ro  # ƒл€ HTTPS в разработке
+      - ./NotesPetProject:/app
+      - ~/.aspnet/https:/https:ro
 
 volumes:
   postgres_data:
